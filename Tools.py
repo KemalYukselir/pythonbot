@@ -49,12 +49,6 @@ Say 'stop' to stop the bot if anything goes wrong
 * Removes the ' https://discord.gg/ ' if its accidentally put in the code after -i so there is no duplicate
 * Makes it into a discord invite form
 
-4) -Monitor
-
-* Bot waits for a discord code
-* Removes whitespace and symbols from the code 
-* Automatically adds it to the end of 'https://discord.gg/' to make it joinable 
-* Handles 'https://discord.gg/' if its accidently put into the code after -monitor to avoid duplication.
 ```
 """
 
