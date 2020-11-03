@@ -152,36 +152,6 @@ async def link(ctx):
 
 
 
-@mainbot.command()
-@commands.guild_only()
-async def monitor(ctx):
-
-    def check(msg):
-
-        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower().strip()
-
-    checker = await mainbot.wait_for("message", check=check)
-    x = True
-
-    if bool(x) == True:
-
-        while True:
-
-            await ctx.send("Awaiting discord code")
-
-            # This will make sure that the response will only be registered if the following
-            # conditions are met:
-
-
-            msg = await mainbot.wait_for("message", check=check)
-
-            msg_code = str(msg.content).replace(" ","").replace("https://discord.gg/","").replace("discord.gg/","")
-            msg_code_no_symbol = re.sub("[^A-Za-z0-9]+","",msg_code)
-
-
-            await ctx.send("https://discord.gg/" + msg_code_no_symbol)
-
-    #await ctx.send("hello" + "\n" + "hi")
 
 
 ########## Binary converter 
@@ -237,10 +207,6 @@ async def b(ctx,*,message):
             
         await ctx.send("https://discord.gg/" + ascii_string)
         
-
-
-
-
 
 
 token_test = "NzE0MDgzODU1MjU0MDI4MzA4.Xspgag.Uof1FspmtRqpQpHAnYboMZLyDXw"
