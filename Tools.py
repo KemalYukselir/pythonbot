@@ -1,9 +1,9 @@
-
 import discord
 from discord.ext import commands
 from bs4 import BeautifulSoup
 import requests
 import re
+import base64
 
 mainbot = commands.Bot(command_prefix = "-")
 
@@ -28,6 +28,7 @@ Say 'stop' to stop the bot if anything goes wrong
 * converts binary to text and automatically puts it into a discord invite form for users to join
 * Automatically adds the code after https://discord.gg/ to make it useful for autojoiners.
 * Removes the ' https://discord.gg/ ' if its accidentally put in the code after -b so there is no duplicate.
+* It doesn't matter if there is no spaces between each binary code. The bot already handles it
 
 2) .b
 
@@ -35,15 +36,17 @@ Say 'stop' to stop the bot if anything goes wrong
 * Automatically removes whitespace
 * Automatically adds the code after https://discord.gg/ to make it useful for autojoiners.
 * Removes the ' https://discord.gg/ ' if its accidentally put in the code after .b so there is no duplicate
-* Also handles ' https://discord.gg/ ' if its backwards e.g ' olleh/gg.drocsid//:sptth ' 
+* Also handles ' https://discord.gg/ ' if its backwards e.g ' olleh/gg.drocsid//:sptth '
 
-3) Auto Detection 
+3) -64
 
-* The bot waits for anything that begins with 'https://discord.gg/' even if theres whitespace.
-* Automatically removes whitespace on the 'https://discord.gg/' part
-* Doesn't remove symbols on the 'https://discord.gg/' part
-* Automatically removes whitespace on the discord invite code after the 'https://discord.gg/' part
-* Automatically removes symbols on the discord invite code after the 'https://discord.gg/' part
+* converts base 64 to text  
+
+4) -i 
+* Automatically removes whitespace on the discord invite code 
+* Automatically removes symbols on the discord invite code
+* Removes the ' https://discord.gg/ ' if its accidentally put in the code after -i so there is no duplicate
+* Makes it into a discord invite form
 
 4) -Monitor
 
@@ -65,9 +68,7 @@ async def on_message(message):
 
     ### Ignore. This bit is for the automatic detection
 
-    auto_message = str(message.content).replace(" ","")
     
-
     if message.content.startswith('.b'):
         the_message = str(message.content).replace(" ","").replace(".b ","").replace(".b","").replace("https://discord.gg/","").replace("/gg.drocsid//:sptth","").replace("/gg.drocsid","")
         if the_message == "":
@@ -78,30 +79,20 @@ async def on_message(message):
             backwards = str(the_message[::-1])
 
             await channel.send("https://discord.gg/" + backwards)
+    
 
-
-
-
-    if auto_message.lower().startswith('https://discord.gg/') or auto_message.lower().startswith('discord.gg/'):
+    if message.content.startswith('-64'):
+        the_message = str(message.content).replace(" ","").replace("-64 ","").replace("-64","").replace("https://discord.gg/","").replace("discord.gg/","").replace("/gg.drocsid//:sptth","").replace("/gg.drocsid","")
         
-        #auto_message_no_symbol = re.sub("[^A-Za-z0-9]+","",auto_message)
+        if the_message == "":
+            pass
 
-        if message.author == mainbot.user: 
-            return
-        
         else:
             channel = message.channel
+            converted = base64.b64decode(the_message)
 
-            sent_message = str(message.content)
-            sent_message = sent_message.replace(" ","").replace("https://discord.gg/","").replace('discord.gg/',"")
+            await channel.send(converted.decode('ascii'))
 
-            sent_message_no_symbol = re.sub("[^A-Za-z0-9]+","",sent_message)
-            
-            
-
-            await channel.send("https://discord.gg/" + sent_message_no_symbol)
-
-            return
 
 
     elif message.content.startswith('-help'):
@@ -117,11 +108,14 @@ async def on_message(message):
 @mainbot.command()
 @commands.guild_only()
 async def i(ctx,*,message):
-    message = str(message).replace(" ","").replace("https://discord.gg/","")
+    message = str(message).replace(" ","").replace("https://discord.gg/","").replace("discord.gg/","")
     message = re.sub("[^A-Za-z0-9]+","",message)
      
     await ctx.send("https://discord.gg/" + message)    
 
+
+
+# Still needs work
 @mainbot.command()
 @commands.guild_only()
 async def link(ctx):
@@ -194,22 +188,53 @@ async def monitor(ctx):
 @commands.guild_only()
 async def b(ctx,*,message):
 
+    try:
 
-    binary_values = message.split()
+        binary_values = message.split()
+        print(binary_values)
 
-    ascii_string = ""
-    for binary_value in binary_values:
-        an_integer = int(binary_value, 2)
-        ascii_character = chr(an_integer)
-        ascii_string += ascii_character
-        ascii_string = str(ascii_string).replace(" ","")
-        ascii_string = ascii_string.replace("https://discord.gg/"," ")
+        ascii_string = ""
+        for binary_value in binary_values:
+            an_integer = int(binary_value, 2)
+            ascii_character = chr(an_integer)
+            ascii_string += ascii_character
+            ascii_string = str(ascii_string).replace(" ","")
+            ascii_string = ascii_string.replace("https://discord.gg/"," ")
+            
+        await ctx.send("https://discord.gg/" + ascii_string)
+    
+    except OverflowError:
+        x = 0 
+        y = 8 
+
+        line = ""
+        while y <= int(len(message)):
+            oneBinaryCode = message
+            oneBinaryCode = message[x:y]
+            x += 8
+            y += 8 
+
+
+            line += " " + oneBinaryCode
+
+
+        line = line.replace(" ","",1)
+
+
+
+        binary_values = line.split()
+        print(binary_values)
+
+
+        ascii_string = ""
+        for binary_value in binary_values:
+            an_integer = int(binary_value, 2)
+            ascii_character = chr(an_integer)
+            ascii_string += ascii_character
+            ascii_string = str(ascii_string).replace(" ","")
+            ascii_string = ascii_string.replace("https://discord.gg/"," ")
+            
+        await ctx.send("https://discord.gg/" + ascii_string)
         
-    await ctx.send("https://discord.gg/" + ascii_string)
-
-        
-token_RR = "NzA4MDAxODIwMTQ3OTc0MTk0.XrRAEw.KGPrssGTL3m48RgvHMRCNkJVi9U"
-token_test = "NzE0MDgzODU1MjU0MDI4MzA4.XvfNRg.aWHB5hzC2vd0gvsgJEhvHhzDWfY"
 
 
-mainbot.run(token_RR)
