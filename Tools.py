@@ -205,4 +205,4 @@ async def b(ctx,*,message):
 
 token = "Token here"
 
-mainbot.run(token_RR)
+mainbot.run()
