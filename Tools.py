@@ -203,7 +203,6 @@ async def b(ctx,*,message):
         
 
 
-token_test = "NzE0MDgzODU1MjU0MDI4MzA4.Xspgag.Uof1FspmtRqpQpHAnYboMZLyDXw"
-token_RR = "NzA4MDAxODIwMTQ3OTc0MTk0.XrRAEw.KGPrssGTL3m48RgvHMRCNkJVi9U"
+token = "Token here"
 
 mainbot.run(token_RR)
